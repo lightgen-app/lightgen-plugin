@@ -1,16 +1,17 @@
 {
   "name": "lightgen-plugins",
+  "description": "AI image generation plugins for Claude Code",
+  "version": "1.0.0",
   "owner": {
     "name": "LightGen",
     "url": "https://lightgen.app"
   },
-  "description": "AI image generation plugins for Claude Code",
-  "version": "1.0.0",
   "plugins": [
     {
       "name": "lightgen",
       "description": "Lightweight MCP that brings image creation to Claude",
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "source": "./lightgen"
     }
   ]
 }
