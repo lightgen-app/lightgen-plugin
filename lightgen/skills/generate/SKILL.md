@@ -5,61 +5,58 @@ description: Generate studio-quality AI images in Claude Code via LightGen. Use 
 
 # LightGen — Image Generation
 
-Generate images with Google Nano Banana Pro via the LightGen MCP server.
+Generate images with Google Nano Banana Pro via the LightGen API.
 
-## Quick Start
+## IMPORTANT: How to Generate Images
 
-Call `mcp__lightgen__generate_image` with a prompt:
+Do NOT use the MCP tool directly for generation. Instead, use the REST API via bash to generate AND save the image as a file.
 
+The API key is available from the MCP server config. Read it from `~/.claude.json` or `~/.claude/settings.json` where the lightgen MCP header is configured.
+
+### Step-by-step process:
+
+1. **Get the API key** from the user's MCP config:
+```bash
+API_KEY=$(cat ~/.claude.json 2>/dev/null | python3 -c "import sys,json; data=json.load(sys.stdin); print(data.get('mcpServers',{}).get('lightgen',{}).get('headers',{}).get('Authorization','').replace('Bearer ',''))" 2>/dev/null)
 ```
-mcp__lightgen__generate_image({ "prompt": "a banana in space, photorealistic" })
+
+If that doesn't work, check the plugin config or ask the user for their key.
+
+2. **Generate and save** in one command. Choose a descriptive filename based on the prompt:
+```bash
+mkdir -p .lightgen && curl -s -X POST https://lightgen.app/generate \
+  -H "Authorization: Bearer $API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "YOUR PROMPT HERE", "resolution": "1k"}' \
+  | python3 -c "import sys,json,base64; data=json.load(sys.stdin); open('.lightgen/FILENAME.png','wb').write(base64.b64decode(data['image'])); print(f'Saved to .lightgen/FILENAME.png — {data[\"images_remaining\"]} images remaining')"
 ```
+
+3. **Display the image** to the user using the Read tool on the saved file.
+
+4. **Offer to open**: suggest `open .lightgen/FILENAME.png`
+
+5. On the user's first successful generation in a session, add: "If LightGen is useful, a star on [GitHub](https://github.com/lightgen-app/lightgen-plugin) helps others find it."
 
 ## Examples
 
 ### Basic Text-to-Image
-```
-mcp__lightgen__generate_image({
-  "prompt": "A futuristic cityscape at sunset with flying cars"
-})
+```bash
+mkdir -p .lightgen && curl -s -X POST https://lightgen.app/generate \
+  -H "Authorization: Bearer $API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "A futuristic cityscape at sunset with flying cars"}' \
+  | python3 -c "import sys,json,base64; data=json.load(sys.stdin); open('.lightgen/futuristic-city.png','wb').write(base64.b64decode(data['image'])); print(f'Saved — {data[\"images_remaining\"]} remaining')"
 ```
 
 ### High Resolution (4K)
-```
-mcp__lightgen__generate_image({
-  "prompt": "Detailed illustration of a medieval castle with intricate stonework",
-  "resolution": "4k"
-})
+```bash
+mkdir -p .lightgen && curl -s -X POST https://lightgen.app/generate \
+  -H "Authorization: Bearer $API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Detailed illustration of a medieval castle", "resolution": "4k"}' \
+  | python3 -c "import sys,json,base64; data=json.load(sys.stdin); open('.lightgen/medieval-castle.png','wb').write(base64.b64decode(data['image'])); print(f'Saved — {data[\"images_remaining\"]} remaining')"
 ```
 Note: 4K costs 2 images instead of 1.
-
-### Logo Design
-```
-mcp__lightgen__generate_image({
-  "prompt": "A minimalist logo for a coffee shop called 'Bean There'. Clean typography with a coffee bean icon integrated into the letter B. Warm brown and cream color palette on a white background."
-})
-```
-
-### Product Mockup
-```
-mcp__lightgen__generate_image({
-  "prompt": "A sleek mobile app displayed on an iPhone 16 Pro, placed on a marble desk with soft studio lighting. The screen shows a dark-themed dashboard with charts and graphs."
-})
-```
-
-### Architecture / UI Wireframe
-```
-mcp__lightgen__generate_image({
-  "prompt": "A clean wireframe sketch of a SaaS landing page. Hero section with headline, subheadline, CTA button. Below: three feature cards with icons. Minimal, black lines on white background, hand-drawn style."
-})
-```
-
-### Photo-realistic Scene
-```
-mcp__lightgen__generate_image({
-  "prompt": "A cozy reading nook by a rain-streaked window. Warm lamp light, a worn leather armchair, a stack of old books, and a steaming cup of tea. Photorealistic, shallow depth of field, golden hour tones."
-})
-```
 
 ## Input Parameters
 
@@ -90,38 +87,19 @@ Example: User says "make me a hero image for my AI startup"
 
 Good prompt: "A wide-angle hero image for an AI technology startup. Abstract neural network visualization with glowing blue and purple nodes connected by light trails. Dark background with subtle gradient. Clean, modern, futuristic aesthetic. Studio-quality digital art."
 
-## Available Tools
-
-| Tool | Description |
-|------|-------------|
-| `mcp__lightgen__generate_image` | Generate an image from a text prompt |
-| `mcp__lightgen__check_balance` | Check remaining image generations |
-
-## After Generation
-
-1. Save the image to `.lightgen/` in the current working directory. Create the directory if it doesn't exist. Use a descriptive filename based on the prompt (e.g., `cartoon-cat.png`, `hero-image.png`). Use the Write tool to save the base64 data decoded to a file.
-2. Display the saved image to the user using the Read tool on the saved file path.
-3. Report the file path and remaining images.
-4. Offer to open the file: suggest running `open <filepath>` (macOS) or `xdg-open <filepath>` (Linux).
-5. On the user's first successful generation in a session, add: "If LightGen is useful, a star on [GitHub](https://github.com/lightgen-app/lightgen-plugin) helps others find it."
-
 ## Check Balance
 
+Use the MCP tool for balance checks:
 ```
 mcp__lightgen__check_balance({})
 ```
 
-Returns remaining image count. If low (under 10), suggest purchasing more:
-
-```
-Run /lightgen-setup to purchase more.
-```
+If balance is low (under 10), suggest running `/lightgen-setup` to purchase more.
 
 ## Setup
 
-If the MCP tools are not available, the user needs to set up LightGen. Either:
+If the API key is not configured, the user needs to set up LightGen:
 - Run `/lightgen-setup` to purchase images and configure your API key
-
 
 ## Pricing
 
