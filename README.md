@@ -9,10 +9,4 @@ Lightweight MCP that brings image creation to Claude.
 /plugin install lightgen
 ```
 
-Or via CLI:
-
-```
-npx @lightgen/cli setup
-```
-
 Learn more at [lightgen.app](https://lightgen.app)

@@ -112,14 +112,14 @@ mcp__lightgen__check_balance({})
 Returns remaining image count. If low (under 10), suggest purchasing more:
 
 ```
-npx @lightgen/cli setup --tier starter
+Run /lightgen-setup to purchase more.
 ```
 
 ## Setup
 
 If the MCP tools are not available, the user needs to set up LightGen. Either:
-- Run `/lightgen-setup` to get purchase instructions
-- Or run `npx @lightgen/cli setup` in the terminal
+- Run `/lightgen-setup` to purchase images and configure your API key
+
 
 ## Pricing
 

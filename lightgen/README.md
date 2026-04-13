@@ -5,14 +5,8 @@ Lightweight MCP that brings image creation to Claude.
 ## Install
 
 ```
-/plugin marketplace add lightgen/lightgen-plugin
+/plugin marketplace add lightgen-app/lightgen-plugin
 /plugin install lightgen
-```
-
-Or via CLI:
-
-```
-npx @lightgen/cli setup
 ```
 
 ## Usage
@@ -23,17 +17,17 @@ Once installed, just ask Claude to generate an image:
 
 Or use the skills:
 
-- `/lightgen:generate` — Generate an image
-- `/lightgen:balance` — Check remaining images
-- `/lightgen:setup` — Purchase images and configure
+- `/lightgen-generate` — Generate an image
+- `/lightgen-balance` — Check remaining images
+- `/lightgen-setup` — Purchase images and configure
 
 ## Pricing
 
-| Tier | Price | Images |
-|------|-------|--------|
-| Trial | $9 | 30 |
-| Starter | $49 | 200 |
-| Growth | $79 | 400 |
+| Tier | Price | Images | Per Image |
+|------|-------|--------|-----------|
+| Trial | $9 | 30 | $0.30 |
+| Starter | $49 | 200 | $0.245 |
+| Growth | $79 | 400 | $0.198 |
 
 Images never expire. 4K resolution costs 2 images per generation.
 
@@ -44,4 +38,3 @@ LightGen is a lightweight MCP plugin that connects Claude to high-quality image 
 ## Links
 
 - Website: [lightgen.app](https://lightgen.app)
-- API docs: [lightgen.app/docs](https://lightgen.app/docs)
