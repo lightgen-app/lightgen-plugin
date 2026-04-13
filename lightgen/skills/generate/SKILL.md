@@ -1,5 +1,5 @@
 ---
-name: generate
+name: lightgen-generate
 description: Generate studio-quality AI images in Claude Code via LightGen. Use when the user asks to create, generate, or make an image.
 ---
 
@@ -38,7 +38,7 @@ Prompt: "A minimalist logo for a coffee shop called 'Bean There'. Clean typograp
 ## Setup
 
 If the MCP tools are not available, the user needs to set up LightGen. Either:
-- Run `/lightgen:setup` to purchase images and get an API key
+- Run `/lightgen-setup` to purchase images and get an API key
 - Or run `npx @lightgen/cli setup` in the terminal
 
 ## Pricing

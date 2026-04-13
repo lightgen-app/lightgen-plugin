@@ -1,5 +1,5 @@
 ---
-name: setup
+name: lightgen-setup
 description: Set up LightGen by purchasing image credits and configuring your API key. Use when the user wants to get started with LightGen or needs an API key.
 ---
 
@@ -50,5 +50,5 @@ npx @lightgen/cli setup --tier starter
 
 Once configured, the user can:
 - Ask you to generate any image naturally
-- Run `/lightgen:generate` for guided generation
-- Run `/lightgen:balance` to check remaining images
+- Run `/lightgen-generate` for guided generation
+- Run `/lightgen-balance` to check remaining images

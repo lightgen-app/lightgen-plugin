@@ -1,5 +1,5 @@
 ---
-name: balance
+name: lightgen-balance
 description: Check your remaining LightGen image generations.
 ---
 
