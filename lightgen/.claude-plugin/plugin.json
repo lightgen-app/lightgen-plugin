@@ -1,6 +1,6 @@
 {
   "name": "lightgen",
-  "version": "2.2.0",
+  "version": "3.0.0",
   "description": "Lightweight MCP that brings image creation to Claude",
   "author": {
     "name": "LightGen",
@@ -9,13 +9,5 @@
   "homepage": "https://lightgen.app",
   "repository": "https://github.com/lightgen-app/lightgen-plugin",
   "license": "MIT",
-  "keywords": ["images", "ai", "generation", "gemini"],
-  "userConfig": {
-    "api_key": {
-      "title": "LightGen API Key",
-      "description": "Your LightGen API key. Get one at https://lightgen.app or run npx @lightgen/cli setup",
-      "type": "string",
-      "sensitive": true
-    }
-  }
+  "keywords": ["images", "ai", "generation", "gemini"]
 }

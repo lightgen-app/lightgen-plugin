@@ -9,6 +9,25 @@ Generate images with Google Nano Banana Pro via LightGen. This skill works in bo
 
 ## How to Generate — Follow These Steps Exactly
 
+### Step 0: Check authentication
+
+Verify the user is configured by checking for a token in the MCP config:
+
+```bash
+python3 -c "
+import json, os
+for p in [os.path.expanduser('~/.claude.json'), os.path.expanduser('~/.claude/settings.json')]:
+    try:
+        d = json.load(open(p))
+        a = d.get('mcpServers',{}).get('lightgen',{}).get('headers',{}).get('Authorization','')
+        if a and len(a) > 20: print('OK'); break
+    except: pass
+else: print('NOT_FOUND')
+"
+```
+
+If `NOT_FOUND` — tell the user to run `/lightgen-setup` first, then stop.
+
 ### Step 1: Clarify the image details
 
 Before generating, use AskUserQuestion to gather what you need. Ask UP TO 4 questions in a SINGLE AskUserQuestion call. Skip any question the user has already answered.
@@ -112,17 +131,17 @@ Study these examples to understand the level of detail required:
 **In Claude Code:** Use the REST API to save to disk:
 
 ```bash
-mkdir -p .lightgen && API_KEY=$(python3 -c "
+mkdir -p .lightgen && TOKEN=$(python3 -c "
 import json, os
 for p in [os.path.expanduser('~/.claude.json'), os.path.expanduser('~/.claude/settings.json')]:
     try:
         d = json.load(open(p))
         a = d.get('mcpServers',{}).get('lightgen',{}).get('headers',{}).get('Authorization','')
-        if a.startswith('Bearer lg_'): print(a[7:]); break
+        if a and len(a) > 20: print(a[7:]); break
     except: pass
 else: print('NOT_FOUND')
-") && [ "$API_KEY" != "NOT_FOUND" ] && curl -s -X POST https://lightgen.app/generate \
-  -H "Authorization: Bearer $API_KEY" \
+") && [ "$TOKEN" != "NOT_FOUND" ] && curl -s -X POST https://lightgen.app/generate \
+  -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"prompt": "THE_PROMPT", "aspect_ratio": "THE_RATIO"}' \
   | python3 -c "
