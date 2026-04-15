@@ -31,9 +31,25 @@ else:
 - If `CONFIGURED` — ask if they want to buy more images (skip to Step 4) or reconfigure.
 - If `NOT_CONFIGURED` — continue to Step 2.
 
-## Step 2: Sign in via browser
+## Step 2: Check if user has an account
 
-Create an auth session, then open the browser for the user to sign in or create an account:
+Ask the user using AskUserQuestion: "Do you have a LightGen account?"
+
+**If they don't have an account:**
+
+Tell the user:
+
+"Create your account here: https://lightgen.app/auth/signup"
+
+"Let me know once you've created your account and I'll connect it."
+
+Wait for the user to confirm they've signed up before continuing.
+
+**Once they have an account, continue to Step 3.**
+
+## Step 3: Connect account via browser login
+
+Create an auth session:
 
 ```bash
 curl -s -X POST https://lightgen.app/auth/session
@@ -41,22 +57,16 @@ curl -s -X POST https://lightgen.app/auth/session
 
 This returns JSON with `session_token` and `url`. Extract both values.
 
-Tell the user: "Opening your browser to sign in or create your account..."
+Tell the user:
 
-Open the login URL:
+"Sign in here to connect your account: LOGIN_URL_HERE"
 
-```bash
-open "LOGIN_URL_HERE"
-```
+"I'll detect when you've signed in."
 
-On Linux use `xdg-open`.
-
-Tell the user: "Complete sign in in your browser. I'll wait."
-
-Poll for completion every 3 seconds, max 100 attempts (5 minutes):
+Poll for completion every 3 seconds, max 200 attempts (10 minutes):
 
 ```bash
-for i in $(seq 1 100); do
+for i in $(seq 1 200); do
   RESULT=$(curl -s "https://lightgen.app/auth/status/SESSION_TOKEN_HERE")
   STATUS=$(echo $RESULT | python3 -c "import sys,json; print(json.load(sys.stdin).get('status',''))" 2>/dev/null)
   if [ "$STATUS" = "complete" ]; then
@@ -70,18 +80,12 @@ for i in $(seq 1 100); do
 done
 ```
 
-- If `AUTH_COMPLETE` — extract the access_token from after the colon. This is the JWT for all subsequent requests.
-- If `AUTH_EXPIRED` — tell the user the session expired and ask them to try again.
+- If `AUTH_COMPLETE` — extract the access_token from after the colon. This is the JWT.
+- If `AUTH_EXPIRED` — tell the user the session expired and offer to try again.
 
-## Step 3: Configure MCP connection
+## Step 4: Configure MCP connection
 
-Store the JWT in the MCP config so the connection works:
-
-```bash
-claude mcp add-json lightgen '{"type":"http","url":"https://lightgen.app/mcp","headers":{"Authorization":"Bearer ACCESS_TOKEN_HERE"}}' --scope user
-```
-
-Replace `ACCESS_TOKEN_HERE` with the access_token from Step 2.
+Store the JWT in the MCP config so the connection works.
 
 If the MCP server already exists, remove it first:
 
@@ -89,11 +93,17 @@ If the MCP server already exists, remove it first:
 claude mcp remove lightgen --scope user
 ```
 
-Then add it again.
+Then add it:
+
+```bash
+claude mcp add-json lightgen '{"type":"http","url":"https://lightgen.app/mcp","headers":{"Authorization":"Bearer ACCESS_TOKEN_HERE"}}' --scope user
+```
+
+Replace `ACCESS_TOKEN_HERE` with the access_token from Step 3.
 
 Tell the user: "You're connected. Now let's get you some image credits."
 
-## Step 4: Purchase images
+## Step 5: Purchase images
 
 Present the pricing:
 
@@ -105,7 +115,7 @@ Present the pricing:
 
 Ask the user which tier using AskUserQuestion. Default to Trial.
 
-Create checkout session (requires the JWT from Step 2):
+Create checkout session (requires the JWT from Step 3):
 
 ```bash
 curl -s -X POST https://lightgen.app/billing/checkout \
@@ -116,19 +126,15 @@ curl -s -X POST https://lightgen.app/billing/checkout \
 
 Extract `session_id` and `url` from the response.
 
-## Step 5: Open checkout and wait
+## Step 6: Open checkout and wait
 
-Tell the user you're opening the payment page. Run:
+Tell the user:
 
-```bash
-open "CHECKOUT_URL_HERE"
-```
+"Complete your purchase here: CHECKOUT_URL_HERE"
 
-On Linux use `xdg-open`.
+"I'll detect when payment is complete."
 
-Tell the user: "Complete the payment in your browser. I'll wait for confirmation."
-
-## Step 6: Poll for completion
+## Step 7: Poll for payment
 
 Poll every 5 seconds, max 60 attempts (5 minutes):
 
@@ -143,7 +149,7 @@ for i in $(seq 1 60); do
 done
 ```
 
-## Step 7: Confirm
+## Step 8: Confirm
 
 If payment complete, tell the user:
 

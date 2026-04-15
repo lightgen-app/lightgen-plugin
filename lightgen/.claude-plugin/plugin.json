@@ -1,6 +1,6 @@
 {
   "name": "lightgen",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "description": "Lightweight MCP that brings image creation to Claude",
   "author": {
     "name": "LightGen",
