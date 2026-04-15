@@ -1,24 +1,11 @@
 ---
 name: lightgen-setup
-description: Set up LightGen by purchasing image credits and configuring your API key. Use when the user wants to get started with LightGen or needs an API key.
+description: Set up LightGen by creating an account, purchasing image credits, and configuring your connection. Use when the user wants to get started with LightGen or buy more images.
 ---
 
 # LightGen Setup
 
-Help the user get started with LightGen image generation.
-
-## If the user already has an API key
-
-Tell them to reconfigure the plugin:
-
-1. Run `/plugin` in Claude Code
-2. Find LightGen in the Installed tab
-3. Click Configure and enter their API key
-
-Or via terminal:
-```
-claude mcp add --transport http lightgen https://lightgen.app/mcp --header "Authorization: Bearer THEIR_KEY" --scope user
-```
+This skill handles LightGen account creation, credit purchases, and MCP configuration. Follow these steps exactly.
 
 ## Step 1: Check if already configured
 
@@ -44,43 +31,67 @@ else:
 - If `CONFIGURED` — ask if they want to buy more images (skip to Step 4) or reconfigure.
 - If `NOT_CONFIGURED` — continue to Step 2.
 
-## Step 2: Create account
+## Step 2: Sign in via browser
 
-Ask the user for their email first using AskUserQuestion ("What email would you like to sign up with?"). Wait for their response.
-
-Then ask them to create a password using a second AskUserQuestion ("Create a password for your account"). Wait for their response.
-
-Then sign up:
+Create an auth session, then open the browser for the user to sign in or create an account:
 
 ```bash
-curl -s -X POST https://lightgen.app/auth/signup \
-  -H "Content-Type: application/json" \
-  -d '{"email": "USER_EMAIL", "password": "USER_PASSWORD"}'
+curl -s -X POST https://lightgen.app/auth/session
 ```
 
-This returns JSON with `access_token`, `refresh_token`, and `user`.
+This returns JSON with `session_token` and `url`. Extract both values.
 
-If the user already has an account, use login instead:
+Tell the user: "Opening your browser to sign in or create your account..."
+
+Open the login URL:
 
 ```bash
-curl -s -X POST https://lightgen.app/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email": "USER_EMAIL", "password": "USER_PASSWORD"}'
+open "LOGIN_URL_HERE"
 ```
 
-Extract the `access_token` from the response. This is the JWT used for all subsequent requests.
+On Linux use `xdg-open`.
+
+Tell the user: "Complete sign in in your browser. I'll wait."
+
+Poll for completion every 3 seconds, max 100 attempts (5 minutes):
+
+```bash
+for i in $(seq 1 100); do
+  RESULT=$(curl -s "https://lightgen.app/auth/status/SESSION_TOKEN_HERE")
+  STATUS=$(echo $RESULT | python3 -c "import sys,json; print(json.load(sys.stdin).get('status',''))" 2>/dev/null)
+  if [ "$STATUS" = "complete" ]; then
+    echo $RESULT | python3 -c "import sys,json; print('AUTH_COMPLETE:' + json.load(sys.stdin).get('access_token',''))"
+    break
+  elif [ "$STATUS" = "expired" ]; then
+    echo "AUTH_EXPIRED"
+    break
+  fi
+  sleep 3
+done
+```
+
+- If `AUTH_COMPLETE` — extract the access_token from after the colon. This is the JWT for all subsequent requests.
+- If `AUTH_EXPIRED` — tell the user the session expired and ask them to try again.
 
 ## Step 3: Configure MCP connection
 
-Store the JWT in the MCP config immediately so the connection works:
+Store the JWT in the MCP config so the connection works:
 
 ```bash
-claude mcp add-json lightgen '{"type":"http","url":"https://lightgen.app/mcp","headers":{"Authorization":"Bearer JWT_HERE"}}' --scope user
+claude mcp add-json lightgen '{"type":"http","url":"https://lightgen.app/mcp","headers":{"Authorization":"Bearer ACCESS_TOKEN_HERE"}}' --scope user
 ```
 
-Replace `JWT_HERE` with the actual access_token from Step 2.
+Replace `ACCESS_TOKEN_HERE` with the access_token from Step 2.
 
-Tell the user: "Account created and MCP configured. Now let's get you some image credits."
+If the MCP server already exists, remove it first:
+
+```bash
+claude mcp remove lightgen --scope user
+```
+
+Then add it again.
+
+Tell the user: "You're connected. Now let's get you some image credits."
 
 ## Step 4: Purchase images
 
@@ -98,7 +109,7 @@ Create checkout session (requires the JWT from Step 2):
 
 ```bash
 curl -s -X POST https://lightgen.app/billing/checkout \
-  -H "Authorization: Bearer JWT_HERE" \
+  -H "Authorization: Bearer ACCESS_TOKEN_HERE" \
   -H "Content-Type: application/json" \
   -d '{"tier": "TIER_HERE"}'
 ```
