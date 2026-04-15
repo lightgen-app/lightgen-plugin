@@ -1,11 +1,24 @@
 ---
 name: lightgen-setup
-description: Set up LightGen by creating an account, purchasing image credits, and configuring your connection. Use when the user wants to get started with LightGen or buy more images.
+description: Set up LightGen by purchasing image credits and configuring your API key. Use when the user wants to get started with LightGen or needs an API key.
 ---
 
 # LightGen Setup
 
-This skill handles LightGen account creation, credit purchases, and MCP configuration. Follow these steps exactly.
+Help the user get started with LightGen image generation.
+
+## If the user already has an API key
+
+Tell them to reconfigure the plugin:
+
+1. Run `/plugin` in Claude Code
+2. Find LightGen in the Installed tab
+3. Click Configure and enter their API key
+
+Or via terminal:
+```
+claude mcp add --transport http lightgen https://lightgen.app/mcp --header "Authorization: Bearer THEIR_KEY" --scope user
+```
 
 ## Step 1: Check if already configured
 
@@ -33,7 +46,9 @@ else:
 
 ## Step 2: Create account
 
-Ask the user for their email and password using AskUserQuestion.
+Ask the user for their email first using AskUserQuestion ("What email would you like to sign up with?"). Wait for their response.
+
+Then ask them to create a password using a second AskUserQuestion ("Create a password for your account"). Wait for their response.
 
 Then sign up:
 
