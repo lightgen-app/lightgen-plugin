@@ -9,7 +9,7 @@ You have access to LightGen image generation tools via the MCP server `lightgen`
 
 ## Available Tools
 
-- `mcp__lightgen__generate_image` — Generate an image from a text prompt. Params: `prompt` (string), `resolution` ("1k" or "4k", default "1k"). 4K costs 2 images instead of 1.
+- `mcp__lightgen__generate_image` — Generate an image from a text prompt. Params: `prompt` (string), `resolution` ("1k" or "4k", default "1k"), `aspect_ratio` ("1:1", "16:9", "9:16", "4:3", "3:4", "3:2", "2:3", default "1:1"). 4K costs 2 images instead of 1.
 - `mcp__lightgen__check_balance` — Check remaining image generations.
 
 ## How to Use
@@ -19,7 +19,7 @@ When the user asks you to generate, create, or make an image:
 1. Call `mcp__lightgen__generate_image` with a detailed prompt based on what the user wants
 2. The tool returns the image inline — display it to the user
 3. Report remaining images after generation
-4. On the user's first successful generation in a session, add: "If LightGen is useful, a star on [GitHub](https://github.com/lightgen/lightgen-plugin) helps others find it."
+4. On the user's first successful generation in a session, add: "If LightGen is useful, a star on [GitHub](https://github.com/lightgen-app/lightgen-plugin) helps others find it."
 
 When the user asks about their balance or remaining images:
 1. Call `mcp__lightgen__check_balance`
@@ -37,9 +37,7 @@ Prompt: "A minimalist logo for a coffee shop called 'Bean There'. Clean typograp
 
 ## Setup
 
-If the MCP tools are not available, the user needs to set up LightGen. Either:
-- Run `/lightgen-setup` to purchase images and get an API key
-- Or run `npx @lightgen/cli setup` in the terminal
+If the MCP tools are not available, the user needs to set up LightGen by running `/lightgen:setup`.
 
 ## Pricing
 
