@@ -1,17 +1,17 @@
 {
-  "name": "lightgen-plugins",
-  "description": "AI image generation plugins for Claude Code",
-  "version": "3.0.0",
+  "name": "lightgen",
+  "description": "Image and video generation for Claude with prepaid credits and no subscription.",
   "owner": {
-    "name": "LightGen",
-    "url": "https://lightgen.app"
+    "name": "Paul Crossland",
+    "email": "hello@paulcrossland.com"
   },
   "plugins": [
     {
       "name": "lightgen",
-      "description": "Lightweight MCP that brings image creation to Claude",
-      "version": "3.0.0",
-      "source": "./lightgen"
+      "source": "./plugins/lightgen",
+      "description": "Generate and edit images with Nano Banana Pro and create short videos with Gemini Omni Flash from inside Claude. Prepaid credits, no subscription.",
+      "category": "media",
+      "tags": ["image-generation", "video-generation", "nano-banana", "gemini", "mcp"]
     }
   ]
 }

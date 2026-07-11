@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "lightgen": {
+      "type": "http",
+      "url": "https://lightgen.app/mcp"
+    }
+  }
+}
