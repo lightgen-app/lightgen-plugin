@@ -9,8 +9,22 @@ lightgen exposes five MCP tools backed by Nano Banana Pro (Google's
 `gemini-3-pro-image`) and Gemini Omni Flash. Each successful generation costs
 prepaid credits: 1 credit at 1K/2K resolution, 2 credits at 4K, and 8 credits
 for a short video. Failed generations are never charged. Results come back as
-hosted URLs — embed images in your reply as markdown so the user sees them and
-link videos directly.
+hosted URLs and downloadable MCP resources.
+
+## Local delivery is part of done
+
+After every successful generation or edit, complete the delivery step before
+responding. If you have filesystem access (for example in Claude Code or a
+project workspace), download each returned asset into the user's current
+project. Use the path the user requested or follow the project's existing asset
+conventions; otherwise use the `suggested_project_path` returned by the tool.
+
+Create the parent directory, download to a temporary file with redirects and
+HTTP failures handled, verify that the file is non-empty and has the expected
+media type, then move it to its final path. Reference or wire the local file
+into the project when that is part of the task. Do not call the task complete
+with only a hosted link. If the client genuinely has no filesystem access,
+explain that limitation and provide the hosted resource instead.
 
 ## Choosing a tool
 

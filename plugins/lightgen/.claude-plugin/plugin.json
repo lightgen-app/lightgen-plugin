@@ -1,6 +1,6 @@
 {
   "name": "lightgen",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "description": "Image and video generation for Claude. Adds generate_image, edit_image, generate_video, get_account, and list_generations tools.",
   "author": {
     "name": "Paul Crossland",
